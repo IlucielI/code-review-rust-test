@@ -30,6 +30,9 @@ Benchmark test suite for automated code review engines on Rust systems and web s
 | `auth_handler.rs` | Hardcoded JWT Secret Key & Plaintext Credential Logging (`eprintln!`) | Credential Exposure | CWE-798 / CWE-532 | High | **BLOCKING** |
 | `http_fetcher.rs` | Server-Side Request Forgery (SSRF) via unvalidated URL | Network Security | CWE-918 | Medium | **BLOCKING** |
 | `redirect_service.rs` | Open Redirect without host whitelist validation | Redirection | CWE-601 | Medium | **BLOCKING** |
+| `cors_layer.rs` | Wildcard \`Any\` origin with \`allow_credentials(true)\` | CORS Misconfiguration | CWE-942 | High | **BLOCKING** |
+| `xml_handler.rs` | XML reader without entity expansion controls (XXE) | Injection / XXE | CWE-611 | High | **BLOCKING** |
+| `cookie_setter.rs` | Cookies explicitly built with \`http_only(false)\` and \`secure(false)\` | Insecure Cookie | CWE-614 / CWE-1004 | Medium | **NON-BLOCKING** |
 
 ### ⚡ Performance & Reliability Traps
 
@@ -44,7 +47,7 @@ Benchmark test suite for automated code review engines on Rust systems and web s
 
 | File | Safe Pattern Implemented | Expected Reviewer Result |
 | :--- | :--- | :---: |
-| `safe_guards.rs` | Parameterized `Command::args` (no shell invocation), path traversal guard checking `..`, explicit `Result`/`match` error handling | **0 False Positives** (Clean) |
+| `safe_guards.rs` | Parameterized `Command::args` (no shell invocation), path traversal guard checking `..`, explicit `Result`/`match` error handling, safe XML handling, hardened `http_only(true)` and `secure(true)` cookies | **0 False Positives** (Clean) |
 
 ---
 
@@ -67,6 +70,6 @@ curl -X POST http://localhost:8081/api/v1/review/trigger \
 
 ## 📊 Benchmark Validation Results
 
-- **Detection Rate:** 10 / 10 (100%)
+- **Detection Rate:** 14 / 14 (100%)
 - **False Positive Rate:** 0 / 1 (`safe_guards.rs` completely passed)
 - **False Negative Rate:** 0%
